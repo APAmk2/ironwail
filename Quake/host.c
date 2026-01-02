@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "bgmusic.h"
 #include "steam.h"
+#include "cl_discord.h"
 #include <setjmp.h>
 
 /*
@@ -1078,17 +1079,29 @@ static void UpdateWindowTitle (void)
 		VID_SetWindowTitle (title);
 
 		if (current.stats.max_players > 1)
+		{
 			Steam_SetStatus_Multiplayer (current.stats.players, current.stats.max_players, utf8name[0] ? utf8name : current.map);
+			DRPC_SetStatus_Multiplayer (current.stats.skill, cl.stats[STAT_HEALTH], cl.stats[STAT_ARMOR], cl.time, current.map, cl.levelname, cl.gametype, current.stats.players, current.stats.max_players);
+		}
 		else
+		{
 			Steam_SetStatus_SinglePlayer (utf8name[0] ? utf8name : current.map);
+			DRPC_SetStatus_SinglePlayer (current.stats.skill, cl.stats[STAT_HEALTH], cl.stats[STAT_ARMOR], cl.time, current.map, cl.levelname);
+		}
 	}
 	else
 	{
 		VID_SetWindowTitle (WINDOW_TITLE_STRING);
 		if (cls.state == ca_connected)
+		{
 			Steam_ClearStatus ();
+			DRPC_ClearStatus ();
+		}
 		else
+		{
 			Steam_SetStatus_Menu ();
+			DRPC_SetStatus_Menu ();
+		}
 	}
 }
 
@@ -1434,6 +1447,7 @@ void Host_Init (void)
 		BGM_Init();
 		Sbar_Init ();
 		CL_Init ();
+		DRPC_Init ();
 		ExtraMaps_Init (); //johnfitz
 		DemoList_Init (); //ericw
 		SaveList_Init ();
@@ -1500,6 +1514,7 @@ void Host_Shutdown(void)
 	scr_disabled_for_loading = true;
 
 	Steam_Shutdown ();
+	DRPC_Shutdown ();
 
 	AsyncQueue_Destroy (&async_queue);
 
