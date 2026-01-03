@@ -32,17 +32,17 @@ cvar_t	cl_discordrpc = { "cl_discordrpc", "1", CVAR_ARCHIVE };
 
 static void DRPC_HandleReady (const DiscordUser* connUser)
 {
-	Con_Printf ("Discord: connected to user %s - %s\n", connUser->username, connUser->userId);
+	Con_Printf ("\nDiscord: connected to user %s - %s\n", connUser->username, connUser->userId);
 }
 
 static void DRPC_HandleDisconnect (int errcode, const char* message)
 {
-	Con_Printf ("Discord: disconnected (reason - %d: %s)\n", errcode, message);
+	Con_Printf ("\nDiscord: disconnected (reason - %d: %s)\n", errcode, message);
 }
 
 static void DRPC_HandleError (int errcode, const char* message)
 {
-	Con_Warning ("Discord: error (reason - %d: %s)\n", errcode, message);
+	Con_Warning ("\nDiscord: error (reason - %d: %s)\n", errcode, message);
 }
 
 void DRPC_Init (void)
@@ -60,6 +60,7 @@ void DRPC_Init (void)
 	Cvar_RegisterVariable (&cl_discordrpc);
 
 	DRPC_ClearStatus ();
+	Discord_RunCallbacks ();
 }
 
 void DRPC_ClearStatus (void)
@@ -85,6 +86,7 @@ void DRPC_SetStatus_Menu (void)
 	{
 		DRPC_ClearStatus ();
 	}
+	Discord_RunCallbacks ();
 }
 
 void DRPC_SetStatus_SinglePlayer (int skill, int hp, int ap, int startTime, const char* map, const char* mapName)
@@ -110,6 +112,7 @@ void DRPC_SetStatus_SinglePlayer (int skill, int hp, int ap, int startTime, cons
 	{
 		DRPC_ClearStatus ();
 	}
+	Discord_RunCallbacks ();
 }
 
 void DRPC_SetStatus_Multiplayer (int skill, int hp, int ap, int startTime, const char* map, const char* mapName, int gametype, int players, int maxplayers)
@@ -137,6 +140,7 @@ void DRPC_SetStatus_Multiplayer (int skill, int hp, int ap, int startTime, const
 	{
 		DRPC_ClearStatus ();
 	}
+	Discord_RunCallbacks ();
 }
 
 void DRPC_Shutdown (void)
